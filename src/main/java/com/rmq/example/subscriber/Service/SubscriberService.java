@@ -18,10 +18,18 @@ public class SubscriberService {
     ObjectMapper objectMapper;
 
     @RabbitListener(containerFactory = "ListerContainerFactory", queues = "${rabbitmq.queuename}")
-    public void receiveMessage( Messagemessage) {
-        String jsonMessage = rmqMessageToString(message);
-        QueueMessage msgObject = new jsonToObject(jsonMessage, QueueMessage.class);
-        System.out.println(msgObject.toString());
+    public void receiveMessage( Message message) {
+        System.out.println("Received Message: " + new String(message.getBody(), StandardCharsets.UTF_8));
+        try {
+            String jsonMessage = rmqMessageToString(message);
+            QueueMessage msgObject = new jsonToObject(jsonMessage, QueueMessage.class);
+            System.out.println(msgObject.toString());
+        }catch (Exception e){
+            System.out.println("Erro ao receber message: " + e.getMessage());
+            throws e;
+
+
+        }
     }
 
     private String rmqMessageToString(Message message) {
